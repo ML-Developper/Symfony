@@ -1,0 +1,79 @@
+{# templates/security/login.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-container { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 60px 50px; width: 100%; max-width: 440px; box-shadow: 0 25px 80px rgba(0,0,0,0.2); position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); }
+        .login-container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b); }
+        .login-header { text-align: center; margin-bottom: 40px; }
+        .login-logo { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; display: block; }
+        .login-subtitle { color: #64748b; font-size: 17px; font-weight: 500; }
+        .error-message { background: linear-gradient(90deg, #fee2e2, #fecaca); color: #991b1b; padding: 16px 24px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid #ef4444; font-size: 15px; box-shadow: 0 4px 12px rgba(239,68,68,0.2); }
+        .form-group { margin-bottom: 28px; position: relative; }
+        .form-label { display: block; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 15px; }
+        .form-input { width: 100%; padding: 18px 22px; border: 2px solid #e5e7eb; border-radius: 16px; font-size: 16px; transition: all 0.3s ease; background: #fafbfc; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .form-input:focus { outline: none; border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15), inset 0 1px 2px rgba(0,0,0,0.05); transform: translateY(-2px); }
+        .login-button { width: 100%; padding: 18px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); margin-top: 12px; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(59,130,246,0.3); }
+        .login-button:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(59,130,246,0.4); }
+        .login-button:active { transform: translateY(-1px); }
+        .login-footer { text-align: center; margin-top: 30px; padding-top: 25px; border-top: 1px solid #e5e7eb; }
+        .login-footer a { color: #3b82f6; text-decoration: none; font-weight: 600; font-size: 15px; }
+        .login-footer a:hover { text-decoration: underline; }
+        @media (max-width: 480px) { .login-container { margin: 0 10px; padding: 40px 30px; } body { padding: 10px; } }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="login-container">
+    <div class="login-header">
+        <h1 class="login-logo">Admin</h1>
+        <p class="login-subtitle">Connectez-vous à votre compte</p>
+    </div>
+
+    {% if error %}
+        <div class="error-message">
+            {{ error.messageKey|trans(error.messageData, 'security')|replace({'Invalid credentials.': 'Identifiants incorrects'}) }}
+        </div>
+    {% endif %}
+
+    <form action="{{ path('app_login') }}" method="post">
+        <div class="form-group">
+            <label class="form-label" for="username">Adresse email</label>
+            <input type="email" 
+                   name="_username" 
+                   id="username"
+                   value="{{ last_username }}" 
+                   required 
+                   class="form-input"
+                   placeholder="votre@email.com"
+                   autocomplete="email">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Mot de passe</label>
+            <input type="password" 
+                   name="_password" 
+                   id="password"
+                   required 
+                   class="form-input"
+                   placeholder="••••••••••"
+                   autocomplete="current-password">
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button type="submit" class="login-button">
+            <span>Se connecter</span>
+        </button>
+    </form>
+
+    <div class="login-footer">
+        <a href={{ path('app_registration') }}>Créer nouvaux compte</a>
+    </div>
+</div>
+{% endblock %}

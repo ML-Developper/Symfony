@@ -1,0 +1,130 @@
+{# templates/article/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Articles{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { display: flex; min-height: 100vh; background: #f4f6f9; }
+        .sidebar { width: 240px; background: #1f2933; color: #fff; padding: 20px 0; position: fixed; top: 0; bottom: 0; left: 0; }
+        .sidebar .logo { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 30px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 8px; }
+        .sidebar a { display: block; padding: 10px 20px; color: #cbd5e1; text-decoration: none; font-size: 15px; }
+        .sidebar a:hover, .sidebar a.active { background: #111827; color: #fff; }
+        .sidebar .section-title { padding: 10px 20px; font-size: 12px; text-transform: uppercase; color: #9ca3af; margin-top: 15px; }
+        .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+        .topbar { height: 60px; background: #ffffff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+        .topbar .title { font-size: 20px; font-weight: 600; }
+        .topbar .user-info { font-size: 14px; color: #6b7280; }
+        .content { padding: 20px; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .flash-messages { margin-bottom: 20px; }
+        .flash-messages div { background: #d1fae5; color: #065f46; padding: 10px; border-radius: 6px; margin-bottom: 8px; }
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .article-card { background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(15,23,42,0.08); transition: box-shadow 0.2s; }
+        .article-card:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.12); }
+        .article-image { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 15px; }
+        .article-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #1f2937; }
+        .article-price { font-size: 20px; font-weight: bold; color: #059669; margin-bottom: 8px; }
+        .article-meta { display: flex; gap: 15px; margin-bottom: 12px; font-size: 14px; color: #6b7280; }
+        .badge { padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+        .badge.available { background: #d1fae5; color: #065f46; }
+        .badge.unavailable { background: #fee2e2; color: #991b1b; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .category-link { margin-top: 20px; }
+        .category-link a { color: #2563eb; text-decoration: none; font-size: 16px; }
+        .category-link a:hover { text-decoration: underline; }
+        @media (max-width: 768px) { .sidebar { position: relative; width: 200px; } .main { margin-left: 200px; } }
+        @media (max-width: 600px) { body { flex-direction: column; } .sidebar { position: relative; width: 100%; height: auto; } .main { margin-left: 0; } .articles-grid { grid-template-columns: 1fr; } .actions { flex-direction: column; } }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="sidebar">
+    <div class="logo">Animalove</div>
+    <div class="section-title">Utilisateurs</div>
+    <ul>
+        <li><a href="#">Admin</a></li>
+        <li><a href="{{ path('app_users') }}" class="active">Liste des utilisateurs</a></li>
+    </ul>
+
+    <div class="section-title">Contenu</div>
+    <ul>
+        <li><a href="{{ path('app_article') }}">Liste des articles</a></li>
+        <li><a href="{{ path('app_categorie') }}">Liste des catégories</a></li>
+        <li><a href={{path('app_login')}}>Deconnection</a></li>
+    </ul>
+</div>
+
+
+<div class="main">
+    <header class="topbar">
+        <div class="title">Liste des Articles</div>
+        <div class="user-info">Connecté en tant qu'admin</div>
+    </header>
+
+    <main class="content">
+        <div class="header-actions">
+            <h2>Articles</h2>
+            <a href="{{ path('add_article') }}" class="btn btn-primary">Ajouter Article</a>
+        </div>
+
+        {% for msg in app.flashes('notice') %}
+            <div class="flash-messages">
+                <div>{{ msg }}</div>
+            </div>
+        {% endfor %}
+
+        <div class="articles-grid">
+            {% for article in listeArticles %}
+            <div class="article-card">
+                {% if article.imageName %}
+                    <img src="{{ asset('images/products/' ~ article.imageName) }}" alt="{{ article.libelle }}" class="article-image">
+                {% else %}
+                    <div class="article-image" style="background: #f3f4f6; display: flex; align-items: center; justify-content: center; color: #6b7280;">Pas d'image</div>
+                {% endif %}
+                
+                <h3 class="article-title">{{ article.libelle }}</h3>
+                
+                <div class="article-price">{{ article.price }} €</div>
+                
+                <div class="article-meta">
+                    <span>Marque: {{ article.marque }}</span>
+                    <span class="badge {{ article.isDisponible ? 'available' : 'unavailable' }}">
+                        {{ article.isDisponible ? 'Disponible' : 'Pas Disponible' }}
+                    </span>
+                </div>
+                
+                <div style="font-size: 14px; color: #6b7280; margin-bottom: 15px;">
+                    Catégorie: {{ article.categorie.nomCategorie }}
+                </div>
+                
+                <div class="actions">
+                    <a href="{{ path('Article_show', {'id': article.id}) }}" class="btn btn-primary" onclick="return confirm('Voir cet article ?')">Voir</a>
+                    <a href="{{ path('edit_article', {'id': article.id}) }}" class="btn btn-success" onclick="return confirm('Modifier {{ article.libelle }} ?')">Modifier</a>
+                    <a href="{{ path('article_delete', {'id': article.id}) }}" class="btn btn-danger" onclick="return confirm('Supprimer {{ article.libelle }} ?')">Supprimer</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="article-card" style="text-align: center; padding: 40px;">
+                <h3>Aucun article trouvé</h3>
+                <a href="{{ path('add_article') }}" class="btn btn-primary">Ajouter le premier</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="category-link">
+            <a href="{{ path('app_categorie') }}">→ Liste des Catégories</a>
+        </div>
+    </main>
+</div>
+{% endblock %}
+

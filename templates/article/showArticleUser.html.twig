@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+
+    .article-card {
+        display: flex;
+        flex-wrap: wrap;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-top: 30px;
+    }
+
+    .article-image {
+        flex: 1 1 300px;
+        max-width: 400px;
+        background: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .article-image img {
+        max-width: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .article-details {
+        flex: 2 1 400px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .article-details h2 {
+        margin-bottom: 15px;
+        font-size: 28px;
+        color: #1f2937;
+    }
+
+    .article-details p {
+        margin-bottom: 10px;
+        font-size: 16px;
+        color: #4b5563;
+    }
+
+    .badge-available {
+        background-color: #10b981;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .badge-unavailable {
+        background-color: #ef4444;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .article-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .article-actions a {
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+
+    .btn-edit {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background-color: #2563eb;
+    }
+
+    .btn-delete {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #dc2626;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .article-card {
+            flex-direction: column;
+        }
+        .article-image, .article-details {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    
+
+    <div class="article-card">
+        <!-- Image -->
+        <div class="article-image">
+            {% if article.imageName %}
+                <img src="{{ asset('images/products/' ~ article.imageName) }}" alt="{{ article.libelle }}">
+            {% else %}
+                <span class="text-gray-400">Pas d'image disponible</span>
+            {% endif %}
+        </div>
+
+        <!-- Details -->
+        <div class="article-details">
+            <div>
+                <h2>{{ article.libelle }}</h2>
+
+                <p><strong>Marque :</strong> {{ article.marque }}</p>
+                <p><strong>Catégorie :</strong> {{ article.categorie.nomCategorie }}</p>
+                <p><strong>Prix :</strong> {{ article.price }} €</p>
+                <p>
+                    <strong>Disponibilité :</strong>
+                    {% if article.isDisponible %}
+                        <span class="badge-available">Disponible</span>
+                    {% else %}
+                        <span class="badge-unavailable">Indisponible</span>
+                    {% endif %}
+                </p>
+            </div>
+
+          
+        </div>
+    </div>
+</div>
+
+{% endblock %}

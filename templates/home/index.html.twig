@@ -1,0 +1,207 @@
+{# templates/home/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Animalove - Animalerie{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        :root { --primary: #10b981; --secondary: #3b82f6; --danger: #ef4444; }
+        body { background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); }
+        
+        /* Header */
+        .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 80px; }
+        .logo { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: #374151; text-decoration: none; font-weight: 600; font-size: 16px; transition: all 0.3s; position: relative; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--primary); transition: width 0.3s; }
+        .nav-links a:hover::after { width: 100%; }
+        
+        /* Hero */
+        .hero { background: linear-gradient(135deg, rgba(16,185,129,0.9), rgba(59,130,246,0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="p" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23p)"/></svg>'); 
+                color: white; text-align: center; padding: 120px 20px 100px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.2)"><animate attributeName="cy" values="20;80;20" dur="3s" repeatCount="indefinite"/></circle></svg>') no-repeat; }
+        .hero-content { max-width: 800px; margin: 0 auto; position: relative; z-index: 2; }
+        .hero h1 { font-size: clamp(2.8rem, 6vw, 4.5rem); font-weight: 900; margin-bottom: 20px; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .hero p { font-size: 1.4rem; margin-bottom: 40px; opacity: 0.95; }
+        .cta-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .cta-primary { padding: 20px 50px; background: white; color: var(--primary); font-size: 18px; font-weight: 800; border-radius: 50px; text-decoration: none; box-shadow: 0 15px 40px rgba(255,255,255,0.4); transition: all 0.4s; }
+        .cta-secondary { padding: 20px 50px; background: transparent; color: white; font-size: 18px; font-weight: 700; border: 2px solid white; border-radius: 50px; text-decoration: none; transition: all 0.4s; }
+        .cta-primary:hover, .cta-secondary:hover { transform: translateY(-5px); box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
+        
+        /* Sections */
+        .section { padding: 100px 20px; max-width: 1200px; margin: 0 auto; }
+        .section h2 { text-align: center; font-size: 3rem; color: #1f2937; margin-bottom: 20px; font-weight: 800; }
+        .section-subtitle { text-align: center; font-size: 1.2rem; color: #6b7280; max-width: 600px; margin: 0 auto 80px; }
+        
+        /* Catégories */
+        .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 20px; }
+        .category-card { background: white; border-radius: 24px; padding: 40px 30px; text-align: center; box-shadow: 0 15px 50px rgba(0,0,0,0.08); transition: all 0.4s; cursor: pointer; position: relative; overflow: hidden; height: 100%; }
+        .category-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary), var(--secondary)); }
+        .category-card:hover { transform: translateY(-12px); box-shadow: 0 30px 80px rgba(0,0,0,0.15); }
+        .category-icon { font-size: 5rem; margin-bottom: 25px; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .category-name { font-size: 1.6rem; font-weight: 800; color: #1f2937; margin-bottom: 15px; }
+        .category-count { color: #10b981; font-size: 1.1rem; font-weight: 700; }
+        
+        /* Produits */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .product-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.08); transition: all 0.4s; cursor: pointer; }
+        .product-card:hover { transform: translateY(-12px); box-shadow: 0 35px 90px rgba(0,0,0,0.15); }
+        .product-image { width: 100%; height: 280px; object-fit: cover; transition: transform 0.4s; }
+        .product-card:hover .product-image { transform: scale(1.05); }
+        .product-info { padding: 30px; }
+        .product-title { font-size: 1.4rem; font-weight: 800; color: #1f2937; margin-bottom: 10px; }
+        .product-category { color: #6b7280; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .product-price { font-size: 2rem; font-weight: 900; color: var(--primary); margin-bottom: 25px; }
+        .product-actions { display: flex; gap: 15px; }
+        .btn-like { width: 60px; height: 60px; border: none; border-radius: 50%; background: #f8fafc; color: #9ca3af; font-size: 24px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn-like:hover { transform: scale(1.1); }
+        .btn-like.liked { background: var(--danger); color: white; animation: pulse 0.6s; }
+        .btn-buy { flex: 1; padding: 18px 25px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; box-shadow: 0 8px 25px rgba(16,185,129,0.3); }
+        .btn-buy:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(16,185,129,0.4); }
+        
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @media (max-width: 768px) { .nav-links { gap: 20px; } .cta-buttons { flex-direction: column; align-items: center; } .categories-grid, .products-grid { grid-template-columns: 1fr; } }
+    </style>
+{% endblock %}
+
+{% block body %}
+<!-- Header -->
+<header class="header">
+    <nav class="nav-container">
+        <a href="" class="logo">🐾 Animalove</a>
+        <ul class="nav-links">
+            <li><a href="#categories">Catégories</a></li>
+            <li><a href="#products">Produits</a></li>
+            <li><a href="#">Panier (0)</a></li>
+            <li><a href="{{ path('app_login') }}">Deconnection</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Hero Animalove -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Tout pour vos Animaux Adorés</h1>
+        <p>La plus grande sélection de produits pour chiens, chats, oiseaux et NAC. Livraison rapide en Tunisie !</p>
+        <div class="cta-buttons">
+            <a href="#products" class="cta-primary">Découvrir les Produits</a>
+            <a href="#categories" class="cta-secondary">Nos Catégories</a>
+        </div>
+    </div>
+</section>
+
+<!-- Catégories -->
+<section id="categories" class="section">
+    <h2>Nos Univers Animaux</h2>
+    <p class="section-subtitle">Choisissez votre compagnon</p>
+    <div class="categories-grid">
+    {% for categorie in listeCategories %}
+        <a href="{{ path('categorie_userShow', {'id': categorie.id}) }}" class="category-card">
+            <div class="category-icon">🐶</div>
+            <div class="category-name">{{ categorie.nomCategorie }}ns</div>
+            <div class="category-count">+250 produits</div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Produits Populaires -->
+<section id="products" class="section">
+    <h2>Nos Meilleures Ventes</h2>
+    <p class="section-subtitle">Produits les plus populaires cette semaine</p>
+    <div class="products-grid">
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=500&h=350&fit=crop" alt="Croquettes Premium Chien" class="product-image">
+            <div class="product-info">
+                <div class="product-category">CHIEN • ALIMENTATION</div>
+                <h3 class="product-title">Croquettes Premium Chien Saumon</h3>
+                <div class="product-price">89.99 TND</div>
+                <div class="product-actions">
+                    <button class="btn-like" onclick="toggleLike(this)">🤍</button>
+                    <button class="btn-buy" onclick="addToCart(this)">Ajouter au Panier</button>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&h=350&fit=crop" alt="Litière Chat" class="product-image">
+            <div class="product-info">
+                <div class="product-category">CHAT • HYGIÈNE</div>
+                <h3 class="product-title">Litière Silice Ultra Absorbante</h3>
+                <div class="product-price">45.99 TND</div>
+                <div class="product-actions">
+                    <button class="btn-like" onclick="toggleLike(this)">🤍</button>
+                    <button class="btn-buy" onclick="addToCart(this)">Ajouter au Panier</button>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&h=350&fit=crop" alt="Jouet Chien" class="product-image">
+            <div class="product-info">
+                <div class="product-category">CHIEN • JOUET</div>
+                <h3 class="product-title">Jouet Indestructible Corde</h3>
+                <div class="product-price">29.99 TND</div>
+                <div class="product-actions">
+                    <button class="btn-like" onclick="toggleLike(this)">🤍</button>
+                    <button class="btn-buy" onclick="addToCart(this)">Ajouter au Panier</button>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="https://m.media-amazon.com/images/I/613lwRncqCL._AC_SL500_.jpg" alt="Arbre à Chat" class="product-image">
+            <div class="product-info">
+                <div class="product-category">Oiseau</div>
+                <h3 class="product-title">Psittacus Oméga Aliment de transition pour types d'oiseau 800 gr</h3>
+                <div class="product-price">29.99 TND</div>
+                <div class="product-actions">
+                    <button class="btn-like" onclick="toggleLike(this)">🤍</button>
+                    <button class="btn-buy" onclick="addToCart(this)">Ajouter au Panier</button>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="https://arbresauxchats.com/cdn/shop/files/main-image-13_db5c25de-ae4a-45c7-9ff6-8bea6584823e.jpg?v=1753257193&width=1800" alt="Arbre à Chat" class="product-image">
+            <div class="product-info">
+                <div class="product-category">CHAT • MOBILIER</div>
+                <h3 class="product-title">Arbre à Chat Design 1.5m</h3>
+                <div class="product-price">199.99 TND</div>
+                <div class="product-actions">
+                    <button class="btn-like" onclick="toggleLike(this)">🤍</button>
+                    <button class="btn-buy" onclick="addToCart(this)">Ajouter au Panier</button>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="https://www.woopets.fr/assets/img/001/244/1200x675/choisir-chien-japonais.jpg" alt="Jouet Chien" class="product-image">
+            <div class="product-info">
+                <div class="product-category">CHIEN • JOUET</div>
+                <h3 class="product-title">Jouet Indestructible Corde</h3>
+                <div class="product-price">29.99 TND</div>
+                <div class="product-actions">
+                    <button class="btn-like" onclick="toggleLike(this)">🤍</button>
+                    <button class="btn-buy" onclick="addToCart(this)">Ajouter au Panier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleLike(button) {
+    button.classList.toggle('liked');
+    button.textContent = button.classList.contains('liked') ? '❤️' : '🤍';
+}
+
+function addToCart(button) {
+    button.innerHTML = '✅ Ajouté !';
+    button.style.background = '#10b981';
+    setTimeout(() => {
+        button.innerHTML = 'Ajouter au Panier';
+        button.style.background = '';
+    }, 2000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{# templates/categorie/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Catégories{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { display: flex; min-height: 100vh; background: #f4f6f9; }
+        .sidebar { width: 240px; background: #1f2933; color: #fff; padding: 20px 0; position: fixed; top: 0; bottom: 0; left: 0; }
+        .sidebar .logo { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 30px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 8px; }
+        .sidebar a { display: block; padding: 10px 20px; color: #cbd5e1; text-decoration: none; font-size: 15px; }
+        .sidebar a:hover, .sidebar a.active { background: #111827; color: #fff; }
+        .sidebar .section-title { padding: 10px 20px; font-size: 12px; text-transform: uppercase; color: #9ca3af; margin-top: 15px; }
+        .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+        .topbar { height: 60px; background: #ffffff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+        .topbar .title { font-size: 20px; font-weight: 600; }
+        .topbar .user-info { font-size: 14px; color: #6b7280; }
+        .content { padding: 20px; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .categories-list-wrapper { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(15,23,42,0.08); overflow: hidden; }
+        .categories-list-header { padding: 20px 25px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
+        .categories-list-header h1 { font-size: 24px; color: #1f2937; margin: 0; }
+        .categories-list { list-style: none; }
+        .category-item { padding: 20px 25px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 20px; transition: background 0.2s; }
+        .category-item:hover { background: #f8fafc; }
+        .category-item:last-child { border-bottom: none; }
+        .category-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #3b82f6, #10b981); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; flex-shrink: 0; }
+        .category-content { flex: 1; min-width: 0; }
+        .category-title { font-size: 20px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+        .category-id { background: #f3f4f6; color: #6b7280; padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: 500; display: inline-block; }
+        .category-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn { padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .empty-state { text-align: center; padding: 60px 20px; background: #f9fafb; border-radius: 8px; color: #6b7280; border: 1px solid #e5e7eb; }
+        @media (max-width: 768px) { .sidebar { position: relative; width: 200px; } .main { margin-left: 200px; } }
+        @media (max-width: 600px) { body { flex-direction: column; } .sidebar { position: relative; width: 100%; height: auto; } .main { margin-left: 0; } .category-item { flex-direction: column; align-items: flex-start; gap: 15px; } .category-actions { order: 3; width: 100%; justify-content: flex-end; } }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="sidebar">
+    <div class="logo">Animalove</div>
+    <div class="section-title">Utilisateurs</div>
+    <ul>
+        <li><a href="#">Admin</a></li>
+        <li><a href="{{ path('app_users') }}" class="active">Liste des utilisateurs</a></li>
+    </ul>
+
+    <div class="section-title">Contenu</div>
+    <ul>
+        <li><a href="{{ path('app_article') }}">Liste des articles</a></li>
+        <li><a href="{{ path('app_categorie') }}">Liste des catégories</a></li>
+        <li><a href={{path('app_login')}}>Deconnection</a></li>
+    </ul>
+</div>
+
+<div class="main">
+    <header class="topbar">
+        <div class="title">Catégories</div>
+        <div class="user-info">Connecté en tant qu'admin</div>
+    </header>
+
+    <main class="content">
+        <div class="header-actions">
+            <h2>Liste des Catégories ({{ listeCategories|length }})</h2>
+            <a href="{{ path('add_Categorie') }}" class="btn btn-primary">Ajouter Catégorie</a>
+        </div>
+
+        {% if listeCategories|length > 0 %}
+            <div class="categories-list-wrapper">
+                <div class="categories-list-header">
+                    <h1>{{ listeCategories|length }} catégorie{{ listeCategories|length > 1 ? 's' }}</h1>
+                </div>
+                <ul class="categories-list">
+                    {% for categorie in listeCategories %}
+                    <li class="category-item">
+                        <div class="category-icon">📁</div>
+                        <div class="category-content">
+                            <div class="category-title">{{ categorie.nomCategorie }}</div>
+                            <span class="category-id">ID {{ categorie.id }}</span>
+                        </div>
+                        <div class="category-actions">
+                            <a href={{ path('categorie_show', {'id': categorie.id}) }} class="btn btn-primary">Voir</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h2>Aucune catégorie</h2>
+                <p>Créez votre première catégorie</p>
+                <a href="/admin/categorie/add" class="btn btn-primary" style="margin-top: 20px;">Ajouter</a>
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
+
+
+
+

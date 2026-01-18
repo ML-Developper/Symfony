@@ -1,0 +1,133 @@
+{# templates/categorie/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Consultation Catégorie{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { display: flex; min-height: 100vh; background: #f4f6f9; }
+        .sidebar { width: 240px; background: #1f2933; color: #fff; padding: 20px 0; position: fixed; top: 0; bottom: 0; left: 0; }
+        .sidebar .logo { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 30px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 8px; }
+        .sidebar a { display: block; padding: 10px 20px; color: #cbd5e1; text-decoration: none; font-size: 15px; }
+        .sidebar a:hover, .sidebar a.active { background: #111827; color: #fff; }
+        .sidebar .section-title { padding: 10px 20px; font-size: 12px; text-transform: uppercase; color: #9ca3af; margin-top: 15px; }
+        .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+        .topbar { height: 60px; background: #ffffff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+        .topbar .title { font-size: 20px; font-weight: 600; }
+        .topbar .user-info { font-size: 14px; color: #6b7280; }
+        .content { padding: 20px; }
+        .category-header { background: #ffffff; border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(15,23,42,0.08); }
+        .category-header h1 { font-size: 28px; color: #1f2937; margin-bottom: 5px; }
+        .category-header .category-id { font-size: 14px; color: #6b7280; margin-bottom: 15px; }
+        .articles-list-wrapper { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(15,23,42,0.08); overflow: hidden; }
+        .articles-list-header { padding: 20px 25px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
+        .articles-list-header h2 { font-size: 20px; color: #1f2937; }
+        .articles-list { list-style: none; }
+        .article-item { padding: 20px 25px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 20px; transition: background 0.2s; }
+        .article-item:hover { background: #f8fafc; }
+        .article-item:last-child { border-bottom: none; }
+        .article-image-small { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+        .article-no-image { width: 80px; height: 80px; background: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6b7280; flex-shrink: 0; }
+        .article-content { flex: 1; min-width: 0; }
+        .article-title { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 4px; }
+        .article-price { font-size: 16px; font-weight: bold; color: #059669; margin-bottom: 8px; }
+        .article-meta { display: flex; gap: 15px; font-size: 14px; color: #6b7280; }
+        .badge { padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+        .badge.available { background: #d1fae5; color: #065f46; }
+        .badge.unavailable { background: #fee2e2; color: #991b1b; }
+        .article-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn { padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .back-link { margin-top: 25px; }
+        .back-link a { color: #2563eb; text-decoration: none; font-size: 16px; }
+        .back-link a:hover { text-decoration: underline; }
+        .empty-state { text-align: center; padding: 60px 20px; background: #f9fafb; border-radius: 8px; color: #6b7280; border: 1px solid #e5e7eb; }
+        @media (max-width: 768px) { .sidebar { position: relative; width: 200px; } .main { margin-left: 200px; } }
+        @media (max-width: 600px) { body { flex-direction: column; } .sidebar { position: relative; width: 100%; height: auto; } .main { margin-left: 0; } .article-item { flex-direction: column; align-items: flex-start; gap: 15px; } .article-actions { order: 3; width: 100%; justify-content: flex-end; } }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="sidebar">
+    <div class="logo">Animalove</div>
+    <div class="section-title">Utilisateurs</div>
+    <ul>
+        <li><a href="#">Admin</a></li>
+        <li><a href="{{ path('app_users') }}" class="active">Liste des utilisateurs</a></li>
+    </ul>
+
+    <div class="section-title">Contenu</div>
+    <ul>
+        <li><a href="{{ path('app_article') }}">Liste des articles</a></li>
+        <li><a href="{{ path('app_categorie') }}">Liste des catégories</a></li>
+    </ul>
+</div>
+
+<div class="main">
+    <header class="topbar">
+        <div class="title">Catégorie {{ categorie.nomCategorie }}</div>
+        <div class="user-info">Connecté en tant qu'admin</div>
+    </header>
+
+    <main class="content">
+        <!-- En-tête catégorie -->
+        <div class="category-header">
+            <h1>{{ categorie.nomCategorie }}</h1>
+            <div class="category-id">ID: {{ categorie.id }}</div>
+        </div>
+
+        <!-- Liste articles -->
+        {% if listeArticles|length > 0 %}
+            <div class="articles-list-wrapper">
+                <div class="articles-list-header">
+                    <h2>{{ listeArticles|length }} article{{ listeArticles|length > 1 ? 's' }} dans cette catégorie</h2>
+                </div>
+                <ul class="articles-list">
+                    {% for article in listeArticles %}
+                    <li class="article-item">
+                        {% if article.imageName %}
+                            <img src="{{ asset('images/products/' ~ article.imageName) }}" alt="{{ article.libelle }}" class="article-image-small">
+                        {% else %}
+                            <div class="article-no-image">Pas d'image</div>
+                        {% endif %}
+                        
+                        <div class="article-content">
+                            <div class="article-title">{{ article.libelle }}</div>
+                            <div class="article-price">{{ article.price }} €</div>
+                            <div class="article-meta">
+                                <span>Marque: {{ article.marque }}</span>
+                                <span class="badge {{ article.isDisponible ? 'available' : 'unavailable' }}">
+                                    {{ article.isDisponible ? 'Disponible' : 'Pas Disponible' }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="article-actions">
+                            <a href="{{ path('Article_show', {'id': article.id}) }}" class="btn btn-primary" onclick="return confirm('Voir cet article ?')">Voir</a>
+                            <a href="{{ path('edit_article', {'id': article.id}) }}" class="btn btn-success">Modifier</a>
+                            <a href="{{ path('article_delete', {'id': article.id}) }}" class="btn btn-danger">Supprimer</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>Aucun article</h3>
+                <p>Aucune article dans la catégorie "{{ categorie.nomCategorie }}"</p>
+            </div>
+        {% endif %}
+
+        <div class="back-link">
+            <a href="{{ path('app_categorie') }}">← Retour aux catégories</a>
+        </div>
+    </main>
+</div>
+{% endblock %}
