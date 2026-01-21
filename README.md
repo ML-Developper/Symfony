@@ -48,5 +48,5 @@ Before installing, make sure you have:
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-user/petshop.git
+git clone [https://github.com/your-user/petshop.git](https://github.com/ML-Developper/Symfony.git)
 cd petshop
